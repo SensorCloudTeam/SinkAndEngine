@@ -1,0 +1,111 @@
+//注册发送信息
+<?xml version="1.0" encoding="UTF-8"?>
+<GateProtocol version="1.0">
+	<cmd>GateRegisterRequest</cmd>
+	<timestamp>20130408080808</timestamp>
+	<ServiceName>ECNU-ken Measurement</ServiceName>
+	<GateKey>ECNU-ken Output</GateKey>
+	<GateType>out</GateType>
+	<GateSpec>
+		<Measurements count="1">
+			<Measurement id="1" type="Number">Light intensity Value</Measurement>
+		</Measurements>
+		<Objects count="1">
+			<Object id="1">Light Location One</Object>
+		</Objects>
+	</GateSpec>
+	<UserName>test</UserName>
+	<Password>1234</Password>
+</GateProtocol>
+
+//注册后接收信息
+<?xml version="1.0" encoding="UTF-8"?>
+<GateProtocol version="1.0">
+	<cmd>GateRegisterResponse</cmd>
+	<timestamp>20130410235032</timestamp>
+	<success>true</success>
+</GateProtocol>
+
+//注册成功后发送的数据
+<?xml version="1.0" encoding="UTF-8"?>
+<DataFrame>
+	<timestamp>20130408080808</timestamp>
+	<Values>
+		<Value type="Number" mid="1" oid="1">13</Value>
+	</Values>
+</DataFrame>
+
+
+
+
+/* Disable SysTick IRQ and SysTick Timer */
+  SysTick->CTRL  &= ~ ( SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk );
+
+  /* Test user or factory temperature sensor calibration value */
+  if ( testUserCalibData() == ENABLE ) calibdata = *USER_CALIB_DATA;
+  else if ( testFactoryCalibData() == ENABLE ) calibdata = *FACTORY_CALIB_DATA;
+  else {
+    calibdata.TS_CAL_COLD = DEFAULT_COLD_VAL;
+    calibdata.TS_CAL_HOT = DEFAULT_HOT_VAL;
+    writeCalibData(&calibdata);
+    calibdata = *USER_CALIB_DATA;
+  }
+				
+  /* Configure Wakeup from sleep using RTC event*/
+  configureWakeup();
+
+  /* Configure direct memory access for ADC usage*/
+  configureDMA();
+
+  /* Configure ADC for temperature sensor value conversion */ 
+  configureADC_Temp();
+				
+				
+  while(1){
+
+    /* Re-enable DMA and ADC conf and start Temperature Data acquisition */ 
+    acquireTemperatureData();
+	
+    /* Stay in SLEEP mode untill the data are acquired by ADC */
+    __WFI();  
+    
+    /* for DEBUG purpose uncomment following line and comment the __WFI call */
+    // while (!flag_ADCDMA_TransferComplete);
+    
+    /* Disable ADC, DMA and clock*/
+    powerDownADC_Temper();
+    
+    /* Process mesured Temperature data - calculate average temperature value in °C */
+    processTempData();
+
+    if (flag_UserButton == TRUE){
+       clearUserButtonFlag();
+       if (CurrentlyDisplayed == Display_TemperatureDegC)
+         CurrentlyDisplayed = Display_ADCval;
+       else
+         CurrentlyDisplayed = Display_TemperatureDegC;   
+    }
+    
+    if (CurrentlyDisplayed == Display_TemperatureDegC) {
+      /* print average temperature value in °C  */
+      sprintf(strDisp, " %d °C", temperature_C );
+    } else {
+      /* print result of ADC conversion  */
+      sprintf(strDisp, "> %d", tempAVG );
+    }
+
+    LCD_GLASS_Clear();
+    LCD_GLASS_DisplayString( (unsigned char *) strDisp );
+    
+    /* Enable RTC Wakeup */ 
+    RTC_WakeUpCmd(ENABLE);
+
+    /* Enter in wait for interrupt sleep mode*/
+    PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+
+    RCC_Configuration();  // reinitialize clock
+    
+    /* After Wake up : Disable Wake up from RTC*/
+    RTC_WakeUpCmd(DISABLE);
+  }
+
