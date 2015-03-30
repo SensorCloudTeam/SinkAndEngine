@@ -1387,7 +1387,7 @@ Image Symbol Table
     i.writeCalibData                         0x080034f8   Section        0  main.o(i.writeCalibData)
     .constdata                               0x08003538   Section       72  stm32l_discovery_lcd.o(.constdata)
     .constdata                               0x08003580   Section        5  service.o(.constdata)
-    .conststring                             0x08003585   Section       21  service.o(.conststring)
+    .conststring                             0x08003585   Section        9  service.o(.conststring)
     .data                                    0x20000000   Section       25  stm32l1xx_rcc.o(.data)
     PLLMulTable                              0x20000000   Data           9  stm32l1xx_rcc.o(.data)
     APBAHBPrescTable                         0x20000009   Data          16  stm32l1xx_rcc.o(.data)
@@ -1678,8 +1678,8 @@ Image Symbol Table
     writeCalibData                           0x080034f9   Thumb Code    54  main.o(i.writeCalibData)
     CapLetterMap                             0x08003538   Data          52  stm32l_discovery_lcd.o(.constdata)
     NumberMap                                0x0800356c   Data          20  stm32l_discovery_lcd.o(.constdata)
-    Region$$Table$$Base                      0x0800359c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x080035bc   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Base                      0x08003590   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x080035b0   Number         0  anon$$obj.o(Region$$Table)
     KeyPressed                               0x20000019   Data           1  stm32l_discovery_lcd.o(.data)
     t_bar                                    0x2000001a   Data           2  stm32l_discovery_lcd.o(.data)
     count                                    0x2000001c   Data           4  stm32l1xx_it.o(.data)
@@ -1742,9 +1742,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000f5
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x0000363c, Max: 0x00020000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00003630, Max: 0x00020000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x000035bc, Max: 0x00020000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x000035b0, Max: 0x00020000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1935,9 +1935,9 @@ Memory Map of the image
     0x080034f8   0x00000040   Code   RO         3300    i.writeCalibData    main.o
     0x08003538   0x00000048   Data   RO         3049    .constdata          stm32l_discovery_lcd.o
     0x08003580   0x00000005   Data   RO         3475    .constdata          service.o
-    0x08003585   0x00000015   Data   RO         3476    .conststring        service.o
-    0x0800359a   0x00000002   PAD
-    0x0800359c   0x00000020   Data   RO         3867    Region$$Table       anon$$obj.o
+    0x08003585   0x00000009   Data   RO         3476    .conststring        service.o
+    0x0800358e   0x00000002   PAD
+    0x08003590   0x00000020   Data   RO         3867    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x000018d0, Max: 0x00003c00, ABSOLUTE)
@@ -1967,7 +1967,7 @@ Image component sizes
          0          0          0          0          0       4244   core_cm3.o
       2290        252          0         36        244      40162   main.o
        120         20          0          0          0       1719   misc.o
-      1186        328         26         32       3636       6856   service.o
+      1186        328         14         32       3636       6856   service.o
         36          8        244          0       1024        928   startup_stm32l1xx_md.o
        402         20          0          0          0       7074   stm32l1xx_adc.o
         24          6          0          0          0        612   stm32l1xx_dbgmcu.o
@@ -1987,7 +1987,7 @@ Image component sizes
        244         30          0          0          0       1581   system_stm32l1xx.o
 
     ----------------------------------------------------------------------
-      9336       1044        376        128       6224     329372   Object Totals
+      9336       1044        364        128       6224     329372   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         24          0          2          0          4          0   (incl. Padding)
 
@@ -2051,15 +2051,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     13380       1148        376        128       6224     323924   Grand Totals
-     13380       1148        376        128       6224     323924   ELF Image Totals
-     13380       1148        376        128          0          0   ROM Totals
+     13380       1148        364        128       6224     323924   Grand Totals
+     13380       1148        364        128       6224     323924   ELF Image Totals
+     13380       1148        364        128          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                13756 (  13.43kB)
+    Total RO  Size (Code + RO Data)                13744 (  13.42kB)
     Total RW  Size (RW Data + ZI Data)              6352 (   6.20kB)
-    Total ROM Size (Code + RO Data + RW Data)      13884 (  13.56kB)
+    Total ROM Size (Code + RO Data + RW Data)      13872 (  13.55kB)
 
 ==============================================================================
 

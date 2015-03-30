@@ -11,7 +11,7 @@ char sResult[100];
 char sErrorMsg[100];
 //SensorData data1 = {"00001","60","20"};
 //SensorData data2 = {"00002","60","30"};
-char* sinkId = "81273981998234814341";
+char* sinkId = "iwSMv3LG";   //发布节点的id,在此处修改其id
 SensorData datas[2];
 int len; 
 int i;
@@ -33,7 +33,7 @@ void entry(){
 		composeRequest();
 		LCD_GLASS_Clear();
 		LCD_GLASS_DisplayString(" Cm OK");
-		Delay(5000);//delay 5s
+		Delay(1000);//delay 1s
 
 		do{
 			// buf 缓冲区清空
@@ -41,9 +41,11 @@ void entry(){
 			count = 0;
 			//发送注册信息
 			sendRequest();
+			/*
 			//发送完成
 			while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET){}
-			Delay(5000);//delay 5s
+			Delay(1000);//delay 1s
+			*/
 				
 			//当 接收完成 或者 超时6*10 = 60s 跳出while
 			while(!(strstr(buf,"}}")||overtime>=10))
@@ -51,10 +53,12 @@ void entry(){
 				Delay(6000);//delay 6s
 				overtime++;//开始计时
 			}
+			/*
 			LCD_GLASS_Clear();
-			sprintf(tempS,"  OV %d",overtime);
+			sprintf(tempS," Timeout %d",overtime);
 			LCD_GLASS_DisplayString(tempS);
 			Delay(5000);//delay 5s
+			*/
 			if(overtime>=10)
 			{
 				m_bRegistered = FALSE;
@@ -72,8 +76,8 @@ void entry(){
 		}while(!m_bRegistered);
 	
 		while(TRUE){
-			send();
-			Delay(1000);
+			send(); //这里没有检测是否是新来的数据就发送了
+			Delay(10000);
 		};
 };
 
@@ -90,23 +94,36 @@ void send(){
 	Delay(1000);
 
 	serialPutString(basicData);
-	
-	
 };
+/*Function name : composeRequest
+*Description : 组装request数据包
+*params : none
+*return : void
+*/
 void composeRequest(){
 	strcat(requestData,"{\"Request\":{\"sinkid\":\"");
 	strcat(requestData,sinkId);
 	strcat(requestData,"\"}}");
 }
+/*Function name : sendRequest
+*Description : 发送request数据包
+*params : none
+*return : void
+*/
 void sendRequest(){
 	USART_ClearFlag(USART3,USART_FLAG_TC);
 	serialPutString(requestData);
-	sprintf(tempS," Sen %d",sendRegC++);
+	sprintf(tempS,"send %d",sendRegC++);
 	LCD_GLASS_Clear();
-	LCD_GLASS_DisplayString(tempS);
-	Delay(5000);//delay 5s
+	LCD_GLASS_DisplayString((unsigned char*)tempS);
+	Delay(1000);//delay 1s
 
 }
+/*Function name : decompose
+*Description : 将Engine发送过来的JSON数数据Response解析
+*params : char*
+*return : _Bool
+*/
 _Bool decompose(char *request){
 		strcpy(pHead, strstr(request,"{\"Answer\":{"));
 		if(NULL==pHead)
@@ -122,16 +139,13 @@ _Bool decompose(char *request){
 			return FALSE;
 		}
 		
-		
 		/*
 		if(pHead > pTail)
 		{
 			strcpy(m_sErrorMsg, "Invalid  register response!");
 			return FALSE;
 		}*/
-
 		memcpy(sResponse,pHead, strlen(pHead)-strlen(pTail+2)); //2指的是"}}"的长度
-		
 		
 		strcpy(pHead,strstr(sResponse,"\"command\":"));
 		strcpy(pTail,strstr(sResponse,"}}"));
@@ -145,8 +159,12 @@ _Bool decompose(char *request){
 		return FALSE;
 		
 }
+/*Function name : compose
+*Description : 将传感器数据格式化为JSON格式的字符串存放在basicData中
+*params : none
+*return : void
+*/
 void compose(/*SensorData *datas*/){
-	//strcpy(basicData,"{");
 	strcat(basicData,"{\"Data\":{");
 	strcat(basicData,"\"sinkid\":");
 	strcat(basicData,"\"");
@@ -162,7 +180,7 @@ void compose(/*SensorData *datas*/){
 		strcat(basicData,"\"sensorid\":");
 		strcat(basicData,"\"");
 		//strcat(basicData,datas[i].sensor_id);
-		sprintf(id,"%d",i);
+		sprintf(id,"%d",i+1);
 		strcat(basicData,id);
 		strcat(basicData,"\"");
 		strcat(basicData,",");
@@ -199,8 +217,7 @@ void compose(/*SensorData *datas*/){
 void serialPutChar(char c)
 {
     USART_SendData(USART3,c);
-    while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET)
-			{}
+    //while(USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET){}
 }
 
 /*******************************************************************************
