@@ -9,7 +9,7 @@ Date.prototype.format = function(format){
 		"s+" : this.getSeconds(), //second 
 		"q+" : Math.floor((this.getMonth()+3)/3), //quarter 
 		"S" : this.getMilliseconds() //millisecond 
-	} 
+	}; 
 
 	if(/(y+)/.test(format)) { 
 		format = format.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
@@ -29,8 +29,8 @@ String.prototype.Trim = function()
 };  
 String.prototype.endWith=function(endStr){
   var d=this.length-endStr.length;
-  return (d>=0&&this.lastIndexOf(endStr)==d)
-}
+  return (d>=0&&this.lastIndexOf(endStr)==d);
+};
 var net = require('net');
 // var xmlparser = require('xml-parser');
 // var xmlbuilder = require('xmlbuilder');
@@ -57,7 +57,7 @@ server.on('connection',function(socket){
 
 	// 为这个socket实例添加一个"data"事件处理函数  
 	socket.on('data', function(data) { 
-		console.log('DATA'+": "+data); 
+		// console.log('DATA'+": "+data); 
 		// socket.write('success!');
 
 		var pattern_request= new RegExp("^{\"Request\"");
@@ -87,13 +87,13 @@ server.on('connection',function(socket){
 			var lost = "";
 			var ss = data.toString().split("{\"Data");
 			for(var i in ss){
-				if(lost != ""){
+				if(lost !== ""){
 					ss[i] = lost+ss[i];
 					lost = "";
 				}
 				console.log(i+":"+ss[i].toString());
 				if(ss[i].endWith("}}")){
-					console.log("开始处理:"+ss[i]);
+					// console.log("开始处理:"+ss[i]);
 					(function(i){
 						
 						parserData("{\"Data"+ss[i]);
@@ -110,7 +110,7 @@ server.on('connection',function(socket){
 
     // 为这个socket实例添加一个"close"事件处理函数  
     socket.on('close', function(data) {  
-    	console.log('CLOSED: '+data) 
+    	console.log('CLOSED: '+data); 
     });  
 });
 
@@ -118,7 +118,7 @@ function parserData(data){
 	try{
 		var data_json = JSON.parse(data.toString());
 
-		console.log(JSON.stringify(data_json));
+		// console.log(JSON.stringify(data_json));
 
 		var sink_id = data_json.Data.sinkid;
 		console.log("sink:"+sink_id);
